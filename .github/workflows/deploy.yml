@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    # main以外のブランチへのpushでCIを実行（開発中の早期フィードバック用）
+    branches-ignore: [main]
+  pull_request:
+    # mainへのPR作成・更新時にCIを実行（マージ前の最終確認）
+    branches: [main]
+
+jobs:
+  ci:
+    # GitHubが提供するUbuntu環境で実行
+    runs-on: ubuntu-latest
+
+    steps:
+      # リポジトリのコードをランナーにチェックアウト
+      - uses: actions/checkout@v4
+
+      # PHPのセットアップ
+      # pdo_sqlite: SQLiteでテスト実行するために必要
+      # mbstring: 文字列処理（Laravel必須）
+      # bcmath: 数値計算（Laravel必須）
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, mbstring, bcmath
+
+      # Node.jsのセットアップ（Viteビルドに使用）
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Composerで依存パッケージをインストール
+      # --no-interaction: 対話入力なしで実行
+      # --prefer-dist: zipでダウンロード（高速）
+      - name: Install Composer dependencies
+        working-directory: src
+        run: composer install --no-interaction --prefer-dist
+
+      # .env.exampleをコピーして.envを生成
+      # CIではDBはSQLite(インメモリ)を使用するためDB設定は不要
+      - name: Copy .env
+        working-directory: src
+        run: cp .env.example .env
+
+      # Laravelアプリの暗号化キーを生成（.envに書き込まれる）
+      - name: Generate app key
+        working-directory: src
+        run: php artisan key:generate
+
+      # npmでフロントエンドの依存パッケージをインストール
+      # npm ci: package-lock.jsonを厳密に使用（npm installより再現性が高い）
+      - name: Install npm dependencies
+        working-directory: src
+        run: npm ci
+
+      # Viteでフロントエンドをビルド
+      # Vue/JS/CSSをpublic/build/に出力
+      - name: Build assets
+        working-directory: src
+        run: npm run build
+
+      # PHPUnitでテストを実行
+      # phpunit.xmlの設定でDBはSQLiteインメモリを使用
+      - name: Run PHPUnit
+        working-directory: src
+        run: php artisan test
