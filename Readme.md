@@ -1,11 +1,16 @@
 コンテナを起動後、appコンテナ内で:
 # envのdb userはroot以外にする
+** Laravel側とdocker-compose用の２つの.envを設定する **
 予約ユーザーなのでよくない
 
 mysql/mysql-server:8.0 が正解。
 mysql:8.0 や mysql:8.4（Docker Hub公式）とは別のMySQL公式イメージで、entrypointが違いchownの問題が起きません。
 
 合わせて my.cnf も必要な基本設定を追加し、chmod 644 も必要です。
+
+しかし、oracleのではログインユーザーを追加する必要がある。現状root@localhostだけで、envのユーザーはログインできないのと、別コンテナからアクセスできない。
+なので image:mysql.8.0は使うとして、userをセットする
+https://zenn.dev/ransakata/scraps/3bdd074f308f37
 
 # Laravelインストール
 composer create-project laravel/laravel . "^12.0"
@@ -44,8 +49,11 @@ php artisan migrate でデータが入るか確認
 mysqlへの接続はdbコンテナからのみ。appにmysqlはない
 
 個別に起動すると Docker のネットワーク設定がうまく機能しないことがあります。docker compose up -d でまとめて起動するのが確実です。
+
 ## 接続テスト
-docker compose exec db mysql -u laravel -ppass order_system
+docker compose exec db mysql -u sa -ppass order_system
+app側のコンテナから
+mysql -h db laravel_vue -u sa -p
 ## app->dbテスト
 docker compose exec app php artisan migrate
 
