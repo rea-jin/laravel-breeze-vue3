@@ -12,6 +12,11 @@ mysql:8.0 や mysql:8.4（Docker Hub公式）とは別のMySQL公式イメージ
 なので image:mysql.8.0は使うとして、userをセットする
 https://zenn.dev/ransakata/scraps/3bdd074f308f37
 
+## mysqlに接続する時は--skip-sslを使う
+コマンドで直接appからdbに接続する時はsslを使わないようにするが、
+php artisanコマンドの時などはmysql cliを使わないので特に気にしなくて良い。
+
+
 # Laravelインストール
 composer create-project laravel/laravel . "^12.0"
 
