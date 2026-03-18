@@ -1,0 +1,120 @@
+####### 01環境の設定
+
+cd ~/Desktop/laravel  
+
+composer create-project laravel/laravel vue_udemy
+
+.envファイル
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=8889
+DB_DATABASE=vue_udemy
+DB_USERNAME=root
+DB_PASSWORD=root
+
+php artisan migrate
+
+composer require laravel/breeze --dev 
+
+php artisan breeze:install vue
+
+php artisan serve
+
+npm install
+
+npm i @fortawesome/fontawesome-free
+
+app.js
+import '@fortawesome/fontawesome-free/css/all.css';
+
+npm run build
+
+npm run dev
+
+Localhost:8000
+
+
+########################################################## 追加　2025/9/21
+
+Laravelのマイナーバージョンアップに伴う弊害と推察されますが、
+環境構築時にエラーが出る様になりました2025/9/21確認
+
+Laravelの
+vite が 7.1.6
+@vitejs/plugin-vue が 5.2.4 で、vite のバージョンは ^5.0.0 || ^6.0.0 のみ対応
+plugin-vue が Vite 7 に対応していない ので npm が依存解決できない様です。
+
+受講生様からのご報告と私の環境とエラーが出るタイミングは異なりましたが、
+私の環境での対処方法を記載させていただきます。
+
+環境の構築
+
+cd ~/Desktop/laravel  
+
+composer create-project laravel/laravel プロジェクト名
+
+.envファイル
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=8889
+DB_DATABASE=データベース名
+DB_USERNAME=root
+DB_PASSWORD=root
+
+php artisan migrate
+
+composer require laravel/breeze --dev 
+
+php artisan breeze:install vue
+
+php artisan serve
+
+npm install 
+ここで下の同様のエラーが出ました。
+
+npm install 
+npm error code ERESOLVE
+npm error ERESOLVE unable to resolve dependency tree
+npm error
+npm error While resolving: undefined@undefined
+npm error Found: vite@7.1.6
+npm error node_modules/vite
+npm error   dev vite@"^7.0.4" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peer vite@"^5.0.0 || ^6.0.0" from @vitejs/plugin-vue@5.2.4
+npm error node_modules/@vitejs/plugin-vue
+npm error   dev @vitejs/plugin-vue@"^5.0.0" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /Users/macintosh/.npm/_logs/2025-09-20T15_04_12_763Z-eresolve-report.txt
+npm error A complete log of this run can be found in: /Users/macintosh/.npm/_logs/2025-09-20T15_04_12_763Z-debug-0.log
+
+この様にしてみてください。
+npm install @vitejs/plugin-vue@latest --save-dev
+
+
+added 233 packages, and audited 234 packages in 28s
+58 packages are looking for funding
+  run `npm fund` for details
+found 0 vulnerabilities
+
+フロント側サーバの起動
+npm run dev
+
+
+> dev
+> vite
+  VITE v7.1.6  ready in 906 ms
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+  LARAVEL v12.30.1  plugin v2.0.1
+  ➜  APP_URL: http://localhost
+こちらで無事　register login含む　Laravelの初期画面（Laravel v12.30.1 (PHP v8.3.8)）が表示されましたので、
+開発できるものと思います。

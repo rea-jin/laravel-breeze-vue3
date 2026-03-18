@@ -16,6 +16,7 @@ RUN apt-get update && \
     zip \
     unzip \
     vim \
+    default-mysql-client \
     && docker-php-ext-install pdo_mysql bcmath
 
 WORKDIR /var/www/html
