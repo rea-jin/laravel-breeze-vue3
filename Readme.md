@@ -1,4 +1,7 @@
 コンテナを起動後、appコンテナ内で:
+# main, dev-dockerブランチはコンテナの設定が違うので使えない。
+featureで進める
+
 # envのdb userはroot以外にする
 予約ユーザーなのでよくない
 

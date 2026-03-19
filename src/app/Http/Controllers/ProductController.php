@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ProductController extends Controller
 {
@@ -14,7 +15,8 @@ class ProductController extends Controller
     {
         //
         $products = Product::all();
-        dd($products);
+        // dd($products);
+        return Inertia::render('Products/Index',['products' => $products]);
     }
 
     /**
@@ -22,7 +24,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        // 商品作成画面を表示する
+        return Inertia::render('Products/Create');
     }
 
     /**
