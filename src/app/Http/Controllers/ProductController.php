@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Http\Requests\ProductRequest;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -11,12 +12,22 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        $products = Product::all();
+        // 検索時のクエリパラメータを取得
+        $search = $request->input('search');
+        if ($search) {
+            // クエリパラメータが存在する場合は、nameカラムに対して部分一致検索を行う
+            $products = Product::where('name', 'like', '%' . $search . '%')->get();
+        } else {
+            // クエリパラメータが存在しない場合は、全てのレコードを取得する
+            $products = Product::all();
+        }
         // dd($products);
-        return Inertia::render('Products/Index',['products' => $products]);
+        return Inertia::render('Products/Index',[
+            'products' => $products,
+            'search' => $search,
+        ]);
     }
 
     /**
@@ -31,9 +42,13 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
         //
+        // dd($request->all());
+        $product = new Product($request->validated());
+        $product->save();
+        return redirect('products');
     }
 
     /**
@@ -50,14 +65,17 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         //
+        return Inertia::render('Products/Edit',['product' => $product]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
         //
+        $product->update($request->validated());
+        return redirect('products');
     }
 
     /**
@@ -66,5 +84,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         //
+        $product->delete();
+        return redirect('products');
     }
 }
