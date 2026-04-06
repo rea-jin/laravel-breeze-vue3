@@ -11,7 +11,7 @@ services:
     volumes:
       - ./src/:/var/www/html
     ports:
-      - 5173:5173
+      - 5173:5173 # Viteのポートを公開 vue, reactなどのフロントエンド開発サーバーのポートを公開
     environment:
       - DB_CONNECTION=mysql
       - DB_HOST=db
